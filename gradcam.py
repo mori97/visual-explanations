@@ -46,7 +46,7 @@ def gradcam(model, layer_name, image, idx=None):
     with torch.no_grad():
         feature_maps = layer.feature_maps.squeeze(0)
         feature_maps_grad = layer.feature_maps_grad.squeeze(0)
-        alpha = feature_maps_grad.mean(2, keepdim=True).mean(1, keepdim=True)
+        alpha = torch.mean(feature_maps_grad, dim=(1, 2), keepdim=True)
         cam = F.relu((alpha * feature_maps).sum(0))
         # Rescale to [0, 1]
         cam = cam / torch.max(cam)
