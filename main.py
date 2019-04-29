@@ -4,14 +4,14 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-from torchvision.models import inception_v3
+from torchvision.models import vgg16_bn
 import torchvision.transforms as transforms
 
 from gradcam import gradcam
 
 METHODS = ('Grad-Cam',)
 # Adjust `INPUT_SIZE` and `NORMALIZE` to your own model
-INPUT_SIZE = 299
+INPUT_SIZE = 224
 NORMALIZE = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
 
@@ -33,21 +33,18 @@ def main():
 
     with open(args.image, 'rb') as f:
         image = Image.open(f).convert('RGB')
-    transform1 = transforms.Compose([
-        transforms.Resize(int(INPUT_SIZE * 8 / 7)),
-        transforms.CenterCrop(INPUT_SIZE),
-    ])
+    resize = transforms.Resize((int(INPUT_SIZE), int(INPUT_SIZE)))
     transform2 = transforms.Compose([
         transforms.ToTensor(),
         NORMALIZE,
     ])
-    image = transform1(image)
+    image = resize(image)
     image_tensor = transform2(image)
 
-    model = inception_v3(pretrained=True)
+    model = vgg16_bn(pretrained=True)
     model.eval()
 
-    cam = gradcam(model, 'Mixed_7b', image_tensor, args.index)
+    cam = gradcam(model, 'features', image_tensor, args.index)
 
     # Visualization
     cam = 1 - cam
