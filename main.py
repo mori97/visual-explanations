@@ -8,8 +8,9 @@ from torchvision.models import vgg16_bn
 import torchvision.transforms as transforms
 
 from gradcam import gradcam
+from gradcam_pp import gradcam_pp
 
-METHODS = ('Grad-Cam',)
+METHODS = ('Grad-Cam', 'Grad-Cam++')
 # Adjust `INPUT_SIZE` and `NORMALIZE` to your own model
 INPUT_SIZE = 224
 NORMALIZE = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -44,7 +45,10 @@ def main():
     model = vgg16_bn(pretrained=True)
     model.eval()
 
-    cam = gradcam(model, 'features', image_tensor, args.index)
+    if args.method == 'Grad-Cam':
+        cam = gradcam(model, 'features', image_tensor, args.index)
+    elif args.method == 'Grad-Cam++':
+        cam = gradcam_pp(model, 'features', image_tensor, args.index)
 
     # Visualization
     cam = 1 - cam
