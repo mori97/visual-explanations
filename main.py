@@ -48,7 +48,7 @@ def main():
     image = resize(image)
     image_tensor = transform2(image)
 
-    model = inception_v3(pretrained=True)
+    model = inception_v3(pretrained=True, transform_input=False)
     model.eval()
 
     plt.subplot(1, 3, 1)
